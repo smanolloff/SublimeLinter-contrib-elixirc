@@ -36,8 +36,8 @@ In addition to the standard SublimeLinter settings, SublimeLinter-contrib-elixir
 
 |Setting|Description|Inline Setting|Inline Override|
 |:------|:----------|:------------:|:-------------:|
-|include\_dirs|List of dirs for `-I` option|&#10003;| |
-|pa|List of dirs for `-I` option| |&#10003;|
+|include\_dirs|List of dirs for `-I` option| | |
+|pa|List of dirs for `-I` option| | |
 
 In a mix project, if a file uses macros, the beam output paths must be added to code path through `-pa`.
 
