@@ -1,7 +1,7 @@
 SublimeLinter-contrib-elixirc
 ==========================
 
-[![Build Status](https://travis-ci.org/SublimeLinter/SublimeLinter-contrib-elixirc.svg?branch=master)](https://travis-ci.org/SublimeLinter/SublimeLinter-contrib-elixirc)
+<!-- [![Build Status](https://travis-ci.org/SublimeLinter/SublimeLinter-contrib-elixirc.svg?branch=master)](https://travis-ci.org/SublimeLinter/SublimeLinter-contrib-elixirc) -->
 
 This linter plugin for [SublimeLinter][docs] provides an interface to check [elixir](http://elixir-lang.org) syntax using **elixirc**. It will be used with files that have the “elixir” syntax.
 
