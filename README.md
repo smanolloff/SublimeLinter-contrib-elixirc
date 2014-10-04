@@ -1,7 +1,7 @@
 SublimeLinter-contrib-elixirc
 ==========================
 
-<!-- [![Build Status](https://travis-ci.org/SublimeLinter/SublimeLinter-contrib-elixirc.svg?branch=master)](https://travis-ci.org/SublimeLinter/SublimeLinter-contrib-elixirc) -->
+[![Build Status](https://travis-ci.org/doitian/SublimeLinter-contrib-elixirc.svg?branch=master)](https://travis-ci.org/doitian/SublimeLinter-contrib-elixirc)
 
 This linter plugin for [SublimeLinter][docs] provides an interface to check [elixir](http://elixir-lang.org) syntax using **elixirc**. It will be used with files that have the “elixir” syntax.
 
@@ -32,12 +32,12 @@ To install via Package Control, do the following:
 ## Settings
 For general information on how SublimeLinter works with settings, please see [Settings][settings]. For information on generic linter settings, please see [Linter Settings][linter-settings].
 
-In addition to the standard SublimeLinter settings, SublimeLinter-contrib-elixirc provides its own settings. Those marked as “Inline Setting” or “Inline Override” may also be [used inline][inline-settings].
+In addition to the standard SublimeLinter settings, SublimeLinter-contrib-elixirc provides its own settings.
 
-|Setting|Description|Inline Setting|Inline Override|
-|:------|:----------|:------------:|:-------------:|
-|include\_dirs|List of dirs for `-I` option| | |
-|pa|List of dirs for `-I` option| | |
+|Setting|Description|
+|:------|:----------|
+|include\_dirs|List of dirs for `-I` option|
+|pa|List of dirs for `-pa` option|
 
 In a mix project, if a file uses macros, the beam output paths must be added to code path through `-pa`.
 
