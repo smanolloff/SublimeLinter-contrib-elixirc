@@ -2,7 +2,7 @@
 
 import tempfile
 import os
-from SublimeLinter.lint import Linter, util
+from SublimeLinter.lint import Linter
 
 
 class Elixirc(Linter):
@@ -33,10 +33,15 @@ class Elixirc(Linter):
     }
 
     def cmd(self):
-        """
-        Override to accept options `include_dirs` and `pa`
-        """
-        command = [self.executable_path, '--warnings-as-errors', '--ignore-module-conflict', '-o', os.path.join(tempfile.gettempdir(), 'SublimeLinter3')]
+        """Override to accept options `include_dirs` and `pa`."""
+
+        tmpdir = os.path.join(tempfile.gettempdir(), 'SublimeLinter3')
+        command = [
+            self.executable_path,
+            '--warnings-as-errors',
+            '--ignore-module-conflict',
+            '-o', tmpdir
+        ]
 
         settings = self.get_view_settings()
         dirs = settings.get('include_dirs', [])
