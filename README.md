@@ -41,7 +41,7 @@ In addition to the standard SublimeLinter settings, SublimeLinter-contrib-elixir
 
 In a mix project, if a file uses macros, the beam output paths must be added to code path through `pa`.
 
-You must save the project file in the top directory in the mix project, then edit the project settings to add `pa` option such as:
+You must save the project file in the top directory in the mix project, then edit the project settings to add the `pa` setting such as:
 
 	{
 		"folders":
