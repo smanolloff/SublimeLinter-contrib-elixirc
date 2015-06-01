@@ -28,12 +28,11 @@ class Elixirc(Linter):
     )
 
     defaults = {
-        "include_dirs": [],
         "pa": []
     }
 
     def cmd(self):
-        """Override to accept options `include_dirs` and `pa`."""
+        """Override to accept option `pa`."""
 
         tmpdir = os.path.join(tempfile.gettempdir(), 'SublimeLinter3')
         command = [
@@ -44,13 +43,9 @@ class Elixirc(Linter):
         ]
 
         settings = self.get_view_settings()
-        dirs = settings.get('include_dirs', [])
         paths = settings.get('pa', [])
 
         for p in paths:
             command.extend(["-pa", p])
-
-        for d in dirs:
-            command.extend(["-I", d])
 
         return command
