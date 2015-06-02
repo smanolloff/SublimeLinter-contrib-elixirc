@@ -63,4 +63,3 @@ class Elixirc(Linter):
                 match = None
 
         return super().split_match(match)
-
