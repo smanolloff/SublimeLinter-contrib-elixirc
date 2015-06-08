@@ -36,32 +36,28 @@ In addition to the standard SublimeLinter settings, SublimeLinter-contrib-elixir
 
 |Setting|Description|
 |:------|:----------|
-|include\_dirs|List of dirs for `-I` option|
+|include\_dirs|List of dirs for `-r` option|
 |pa|List of dirs for `-pa` option|
 
-In a mix project, if a file uses macros, the beam output paths must be added to code path through `pa`.
+In a mix project:
+* if a file uses macros, the beam output paths must be added to code path through `pa`
+* if external dependencies are used, their paths must be added through `include_dirs`
+* add the above to your **sublime project**'s settings. Example:
 
-You must save the project file in the top directory in the mix project, then edit the project settings to add the `pa` setting such as:
-
-	{
-		"folders":
-		[
-			{
-				"follow_symlinks": true,
-				"path": ".",
-	      		"folder_exclude_patterns": ["_build"],
+```JSON
+	"SublimeLinter": {
+		"linters": {
+			"elixirc": {
+				"pa": ["MIX_ROOT/_build/dev/lib/PROJECT_WITH_MACROS/ebin"],
+				"include_dirs": ["MIX_ROOT/deps"]
 			}
-		],
-	    "SublimeLinter": {
-	        "linters": {
-	            "elixirc": {
-	                "pa": ["${project}/_build/dev/lib/PROJECT_WITH_MACROS/ebin"]
-	            }
-	        }
-	    }
+		}
 	}
+```
 
-`PROJECT_WITH_MACROS` is the project name which contains the macros. List all projects in `pa`. The project file is required to be saved in the top directory, so that `${project}` can be used as the top level directory of the project.
+Where:
+* `MIX_ROOT` is the root dir of your mix project (use `${project}` if your sublime project is saved there)
+* `PROJECT_WITH_MACROS` is the project name which contains the macros. List all projects in `pa`
 
 
 ## Contributing
