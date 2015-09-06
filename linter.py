@@ -13,17 +13,21 @@ class Elixirc(Linter):
 
     Error formats:
 
-    1) Default errors:
+    1) Error type 1:
     |== Compilation error on file {filename} ==
     |** ({error_name}) {filename}:{line}: {message}
     |...<trace lines>...
 
-    2) Macro errors:
+    2) Error type 2:
     |== Compilation error on file {filename} ==
     |** ({error_name}) {message}
     |...<trace lines>...
 
-    3) Warnings:
+    3) Error type 3:
+    |** ({error_name}) {filename}:{line}: {message}
+    |...<trace lines>...
+
+    4) Warning type 1:
     |{filename}:{line}: warning: {message}
 
 
@@ -40,12 +44,23 @@ class Elixirc(Linter):
     syntax = ("elixir")
     tempfile_suffix = "-"
 
-    regex = (
-        r"^(?:== Compilation error on file (?P<file1>.+) ==\n"
-        r"(?:\*+\s\(.+\))?(?:\s[\S].*:(?P<line1>\d+): )?)(?P<msg1>.+)"
-        r"|"
-        r"(?:(?P<file2>.+):(?P<line2>\d+): warning: (?P<msg2>.+))"
+    regex_parts = (
+        # Error type 1
+        r"== Compilation error on file (?P<e_file1>.+) ==\n"
+        r"\*\* \(.+\) .+:(?P<e_line1>\d+): (?P<e_msg1>.+)",
+
+        # Error type 2
+        r"== Compilation error on file (?P<e_file2>.+) ==\n"
+        r"\*\* \(.+\) (?P<e_msg2>.+)",
+
+        # Error type 3
+        r"\*\* \(.+\) (?P<e_file3>.+):(?P<e_line3>\d+): (?P<e_msg3>.+)",
+
+        # Warning type 1
+        r"(?P<w_file1>.+):(?P<w_line1>\d+): warning: (?P<w_msg1>.+)"
     )
+
+    regex = "|".join([r"^(?:%s)" % x for x in regex_parts])
 
     dummy_regex = re.compile(
         r"(?P<filename>.+):"
@@ -163,22 +178,40 @@ class Elixirc(Linter):
         {filename}:{line}:{error_type}:{message}
 
         """
-        if captures['file1'] is not None:
+        if captures['e_file1'] is not None:
+            # Error type 1
             dummy_str = '%s:%s:%s:%s' % (
-                captures['file1'],
-                captures['line1'] or 0,
+                captures['e_file1'],
+                captures['e_line1'],
                 'error',
-                captures['msg1']
+                captures['e_msg1']
             )
-        elif captures['file2'] is not None:
+        elif captures['e_file2'] is not None:
+            # Error type 2
             dummy_str = "%s:%s:%s:%s" % (
-                captures['file2'],
-                captures['line2'] or 0,
+                captures['e_file2'],
+                '1',
+                'error',
+                captures['e_msg2']
+            )
+        elif captures['e_file3'] is not None:
+            # Error type 3
+            dummy_str = "%s:%s:%s:%s" % (
+                captures['e_file3'],
+                captures['e_line3'],
+                'error',
+                captures['e_msg3']
+            )
+        elif captures['w_file1'] is not None:
+            # Warning type 1
+            dummy_str = "%s:%s:%s:%s" % (
+                captures['w_file1'],
+                captures['w_line1'],
                 'warning',
-                captures['msg2']
+                captures['w_msg1']
             )
         else:
             dummy_str = ""
 
-        persist.debug("Dummy string: %s" % self.filename)
+        persist.debug("Dummy string: %s" % dummy_str)
         return dummy_str
