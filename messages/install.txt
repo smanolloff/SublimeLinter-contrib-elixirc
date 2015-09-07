@@ -7,4 +7,4 @@ This linter plugin for SublimeLinter provides an interface to elixirc.
 Before this plugin will activate, you *must*
 follow the installation instructions here:
 
-https://github.com/doitian/SublimeLinter-contrib-elixirc
+https://github.com/smanolloff/SublimeLinter-contrib-elixirc
