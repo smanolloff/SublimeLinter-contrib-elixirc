@@ -34,30 +34,54 @@ For general information on how SublimeLinter works with settings, please see [Se
 
 In addition to the standard SublimeLinter settings, SublimeLinter-contrib-elixirc provides its own settings.
 
-|Setting|Description|
-|:------|:----------|
-|include\_dirs|List of dirs for `-r` option|
-|pa|List of dirs for `-pa` option|
+|Setting     |Description                    |
+|:-----------|:------------------------------|
+|pa          |_(list)_ dirs for `-pa` option |
+|require     |_(list)_ dirs/files to require |
+|mix_project |_(bool)_ use mix for linting   |
 
-In a mix project:
-* if a file uses macros, the beam output paths must be added to code path through `pa`
-* if external dependencies are used, their paths must be added through `include_dirs`
-* add the above to your **sublime project**'s settings. Example:
+### In a mix project:
+* set `chdir` to your mix project's root directory.
+* set `mix_project` to `true`
 
+#### Example:
+In your _.sublime-project_ file:
 ```JSON
-	"SublimeLinter": {
-		"linters": {
-			"elixirc": {
-				"pa": ["MIX_ROOT/_build/dev/lib/PROJECT_WITH_MACROS/ebin"],
-				"include_dirs": ["MIX_ROOT/deps"]
-			}
-		}
-	}
+   "SublimeLinter": {
+      "linters": {
+         "elixirc": {
+            "mix_project": true,
+            "chdir": "PROJECT_ROOT"
+         }
+      }
+   }
 ```
 
 Where:
-* `MIX_ROOT` is the root dir of your mix project (use `${project}` if your sublime project is saved there)
+* `PROJECT_ROOT` is the path to the root your project (use `${project}` if your sublime project is saved there)
+
+### Outside a mix project:
+* if a file uses macros, the beam output paths must be added to code path through `pa`
+* files (or directories) to require prior before linting must be added through `require`. They are required in the given order. Directory contents are traversed alphabetically.
+* add the above to your **sublime project**'s settings.
+
+#### Example
+In your _.sublime-project_ file:
+```JSON
+   "SublimeLinter": {
+      "linters": {
+         "elixirc": {
+            "pa": ["PROJECT_ROOT/_build/dev/lib/PROJECT_WITH_MACROS/ebin"],
+            "require": ["PROJECT_ROOT/deps/DEP1"]
+         }
+      }
+   }
+```
+
+Where:
+* `PROJECT_ROOT` is the path to the root of your project (use `${project}` if your sublime project is saved there)
 * `PROJECT_WITH_MACROS` is the project name which contains the macros. List all projects in `pa`
+* `DEP1` is a directory with files to require. If needed, list specific files first.
 
 
 ## Contributing
