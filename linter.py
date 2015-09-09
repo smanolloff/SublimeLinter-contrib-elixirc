@@ -217,4 +217,3 @@ class Elixirc(Linter):
 
         persist.debug("Dummy string: %s" % dummy_str)
         return dummy_str
-
