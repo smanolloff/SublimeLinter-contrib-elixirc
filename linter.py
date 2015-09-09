@@ -21,6 +21,7 @@ class Elixirc(Linter):
     2) Error type 2:
     |== Compilation error on file {filename} ==
     |** ({error_name}) {message}
+    |    {filename}:{line}              # optional
     |...<trace lines>...
 
     3) Error type 3:
@@ -51,7 +52,8 @@ class Elixirc(Linter):
 
         # Error type 2
         r"== Compilation error on file (?P<e_file2>.+) ==\n"
-        r"\*\* \(.+\) (?P<e_msg2>.+)",
+        r"\*\* \(.+\) (?P<e_msg2>.+)\n"
+        r"(?:    (?:.+):(?P<e_line2>\d+))?",
 
         # Error type 3
         r"\*\* \(.+\) (?P<e_file3>.+):(?P<e_line3>\d+): (?P<e_msg3>.+)",
@@ -190,7 +192,7 @@ class Elixirc(Linter):
             # Error type 2
             dummy_str = "%s:%s:%s:%s" % (
                 captures['e_file2'],
-                '1',
+                captures['e_line2'] or '1',
                 'error',
                 captures['e_msg2']
             )
@@ -215,3 +217,4 @@ class Elixirc(Linter):
 
         persist.debug("Dummy string: %s" % dummy_str)
         return dummy_str
+
