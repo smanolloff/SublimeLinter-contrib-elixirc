@@ -7,5 +7,5 @@ install:
   - pip install pep257
 # command to run tests
 script:
-  - flake8 *.py --max-line-length=120
-  - pep257 . --ignore=D202 --ignore=W391
+  - flake8 *.py --max-line-length=120 --ignore=W391
+  - pep257 . --ignore=D202
