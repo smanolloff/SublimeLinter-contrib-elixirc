@@ -16,19 +16,37 @@ class Elixirc(Linter):
     1) Error type 1:
     |== Compilation error on file {filename} ==
     |** ({error_name}) {filename}:{line}: {message}
-    |...<trace lines>...
+    |    ...
 
     2) Error type 2:
     |== Compilation error on file {filename} ==
     |** ({error_name}) {message}
-    |    {filename}:{line}              # optional
-    |...<trace lines>...
+    |    {filename}:{line}
+    |    ...
 
-    3) Error type 3:
+    3.1) Error type 3.1 -- lib files first in trace:
+    |== Compilation error on file {filename} ==
+    |** ({error_name}) {message}
+    |    (libname) {other_filename}:{line}
+    |    ...
+    |    {filename}:{line}
+    |    ...
+
+    3.2) Error type 3.2 -- function names first in trace:
+    |== Compilation error on file {filename} ==
+    |** ({error_name}) {message}
+    |    {function_name}()
+    |    ...
+    |    {filename}:{line}
+    |    ...
+
+    4) Error type 5:
     |** ({error_name}) {filename}:{line}: {message}
     |...<trace lines>...
 
-    4) Warning type 1:
+    Warning formats:
+
+    1) Warning type 1:
     |{filename}:{line}: warning: {message}
 
 
@@ -40,6 +58,30 @@ class Elixirc(Linter):
     expected by the Linter. This is done by overriding
     the split_match method.
 
+
+    Examples (mix project of a Phoenix app):
+    1)
+    |== Compilation error on file web/router.ex ==
+    |** (CompileError) web/router.ex:19: undefined function get/2
+    |    ...
+
+    2) #todo
+
+    3) insert a "resources :users, UserController" line in router.ex
+    |== Compilation error on file web/router.ex ==
+    |** (FunctionClauseError) no function clause matching in Phoenix.Router.Resource.build/3
+    |    (phoenix) lib/phoenix/router/resource.ex:30: Phoenix.Router.Resource.build(:users, UserController, [])
+    |    web/router.ex:20: (module)
+    |    ...
+
+    4) Modify line 2 to "use MyApp.Web, :dasdsadasda"
+    |== Compilation error on file web/controllers/page_controller.ex ==
+    |** (UndefinedFunctionError) undefined function: MyApp.Web.controllers/0
+    |    MyApp.Web.controllers()
+    |    expanding macro: MyApp.Web.__using__/1
+    |    web/controllers/page_controller.ex:2: MyApp.PageController (module)
+    |    ...
+
     """
 
     syntax = ("elixir")
@@ -48,15 +90,24 @@ class Elixirc(Linter):
     regex_parts = (
         # Error type 1
         r"== Compilation error on file (?P<e_file1>.+) ==\n"
-        r"\*\* \(.+\) .+:(?P<e_line1>\d+): (?P<e_msg1>.+)",
+        r"\*\* \(.+\) (?P=e_file1):(?P<e_line1>\d+): (?P<e_msg1>.+)",
 
         # Error type 2
         r"== Compilation error on file (?P<e_file2>.+) ==\n"
         r"\*\* \(.+\) (?P<e_msg2>.+)\n"
-        r"(?:    (?:.+):(?P<e_line2>\d+))?",
+        r"    (?P=e_file2):(?P<e_line2>\d+)",
 
         # Error type 3
-        r"\*\* \(.+\) (?P<e_file3>.+):(?P<e_line3>\d+): (?P<e_msg3>.+)",
+        # Do not backreference e_file3 -- we want the _first_
+        # meaningful trace line to be captured, skipping an
+        # arbitary number of irrelevant lines before that.
+        r"== Compilation error on file .+ ==\n"
+        r"\*\* \(.+\) (?P<e_msg3>.+)\n"
+        r"(.+\n)*?"
+        r"    (?P<e_file3>[^(].+):(?P<e_line3>\d+)",
+
+        # Error type 4
+        r"\*\* \(.+\) (?P<e_file4>.+):(?P<e_line4>\d+): (?P<e_msg4>.+)",
 
         # Warning type 1
         r"(?P<w_file1>.+):(?P<w_line1>\d+): warning: (?P<w_msg1>.+)"
@@ -127,6 +178,9 @@ class Elixirc(Linter):
 
     def mix_args(self):
         """With mix, we just need to invoke its compile task."""
+        # TODO: this does not work for .exs files
+        #       (e.g. ExUnit test files) -- i haven't found
+        #       out how to lint them with mix
         args = [
             '-S', 'mix', 'compile',
             '--warnings-as-errors',
@@ -147,6 +201,7 @@ class Elixirc(Linter):
             but we still need to pass a match object that
             contains the above groups upstream.
           * Line is not reported for some macro errors
+          * etc..
 
         """
         dummy_match = None
@@ -158,6 +213,9 @@ class Elixirc(Linter):
 
         if dummy_match:
             filename = os.path.join(self.chdir, dummy_match.group('filename'))
+
+            persist.debug("Linted file: %s" % self.filename)
+            persist.debug("Error source: %s" % filename)
 
             if self.filename != filename:
                 persist.debug(
@@ -181,7 +239,7 @@ class Elixirc(Linter):
 
         """
         if captures['e_file1'] is not None:
-            # Error type 1
+            persist.debug('Error type 1')
             dummy_str = '%s:%s:%s:%s' % (
                 captures['e_file1'],
                 captures['e_line1'],
@@ -189,23 +247,32 @@ class Elixirc(Linter):
                 captures['e_msg1']
             )
         elif captures['e_file2'] is not None:
-            # Error type 2
+            persist.debug('Error type 2')
             dummy_str = "%s:%s:%s:%s" % (
                 captures['e_file2'],
-                captures['e_line2'] or '1',
+                captures['e_line2'],
                 'error',
                 captures['e_msg2']
             )
         elif captures['e_file3'] is not None:
-            # Error type 3
+            persist.debug('Error type 3')
             dummy_str = "%s:%s:%s:%s" % (
                 captures['e_file3'],
                 captures['e_line3'],
                 'error',
                 captures['e_msg3']
             )
+
+        elif captures['e_file4'] is not None:
+            persist.debug('Error type 4')
+            dummy_str = "%s:%s:%s:%s" % (
+                captures['e_file4'],
+                captures['e_line4'],
+                'error',
+                captures['e_msg4']
+            )
         elif captures['w_file1'] is not None:
-            # Warning type 1
+            persist.debug('Warning type 1')
             dummy_str = "%s:%s:%s:%s" % (
                 captures['w_file1'],
                 captures['w_line1'],
@@ -213,7 +280,9 @@ class Elixirc(Linter):
                 captures['w_msg1']
             )
         else:
+            persist.debug('No match')
             dummy_str = ""
 
         persist.debug("Dummy string: %s" % dummy_str)
         return dummy_str
+
