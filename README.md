@@ -9,16 +9,12 @@ This linter plugin for [SublimeLinter][docs] provides an interface to check [eli
 SublimeLinter 3 must be installed in order to use this plugin. If SublimeLinter 3 is not installed, please follow the instructions [here][installation].
 
 ### Linter installation
-Before using this plugin, you must ensure that `elixir` is installed on your system. For example, it can be installed throw [Homebrew](http://brew.sh) in Mac OS X:
-
-    brew install elixir
-
-**Note:** This plugin requires `elixirc` 1.0 or later.
+Before installing this plugin, you must ensure that `elixir` (>= 1.0) is installed on your system. For instructions on how to install elixir, please refer to the [http://elixir-lang.org/install.html](elixir-lang docs).
 
 ### Linter configuration
-In order for `elixirc` to be executed by SublimeLinter, you must ensure that its path is available to SublimeLinter. Before going any further, please read and follow the steps in [“Finding a linter executable”](http://sublimelinter.readthedocs.org/en/latest/troubleshooting.html#finding-a-linter-executable) through “Validating your PATH” in the documentation.
+In order for `elixir` to be executed by SublimeLinter, you must ensure that its path is available to SublimeLinter. Before going any further, please read and follow the steps in [“Finding a linter executable”](http://sublimelinter.readthedocs.org/en/latest/troubleshooting.html#finding-a-linter-executable) through “Validating your PATH” in the documentation.
 
-Once you have installed and configured `elixirc`, you can proceed to install the SublimeLinter-contrib-elixirc plugin if it is not yet installed.
+Once `elixir` is installed and configured, you can proceed to install the SublimeLinter-contrib-elixirc plugin if it is not yet installed.
 
 ### Plugin installation
 Please use [Package Control][pc] to install the linter plugin. This will ensure that the plugin will be updated when new versions are available. If you want to install from source so you can modify the source code, you probably know what you are doing so we won’t cover that here.
@@ -60,10 +56,11 @@ In your _.sublime-project_ file:
 Where:
 * `PROJECT_ROOT` is the path to the root your project (use `${project}` if your sublime project is saved there)
 
+Note: Currently, `exs` files within a mix project (e.g. ExUnit tests) are not linted. This is a known issue and will be resolved in a future version.
+
 ### Outside a mix project:
 * if a file uses macros, the beam output paths must be added to code path through `pa`
-* files (or directories) to require prior before linting must be added through `require`. They are required in the given order. Directory contents are traversed alphabetically.
-* add the above to your **sublime project**'s settings.
+* files (or directories) to require prior to linting must be added through `require`. They are required in the given order. Directories, if given, are traversed recursively and alphabetically.
 
 #### Example
 In your _.sublime-project_ file:
