@@ -7,7 +7,6 @@ from SublimeLinter.lint import Linter, persist
 
 
 class Elixirc(Linter):
-
     """
     Provides an interface to elixirc.
 
