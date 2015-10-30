@@ -8,4 +8,4 @@ install:
 # command to run tests
 script:
   - flake8 *.py --max-line-length=120 --ignore=W391,W291
-  - pep257 . --ignore=D202
+  - pep257 . --ignore=D202,D203
