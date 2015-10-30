@@ -18,13 +18,13 @@ class Elixirc(Linter):
     |** ({error_name}) {filename}:{line}: {message}
     |    ...
 
-    2) Error type 2:
+    2.1) Error type 2 -- source file first in trace:
     |== Compilation error on file {filename} ==
     |** ({error_name}) {message}
     |    {filename}:{line}
     |    ...
 
-    3.1) Error type 3.1 -- lib files first in trace:
+    2.2) Error type 2.2 -- lib files first in trace:
     |== Compilation error on file {filename} ==
     |** ({error_name}) {message}
     |    (libname) {other_filename}:{line}
@@ -32,7 +32,7 @@ class Elixirc(Linter):
     |    {filename}:{line}
     |    ...
 
-    3.2) Error type 3.2 -- function names first in trace:
+    2.3) Error type 2.3 -- function names first in trace:
     |== Compilation error on file {filename} ==
     |** ({error_name}) {message}
     |    {function_name}()
@@ -40,7 +40,16 @@ class Elixirc(Linter):
     |    {filename}:{line}
     |    ...
 
-    4) Error type 5:
+    2.4) Error type 2.4 -- irrelevant files first in trace:
+    |== Compilation error on file {filename} ==
+    |** ({error_name}) {message}
+    |    {filename_2}:{line_2}
+    |    {filename_3}:{line_3}
+    |    ...
+    |    {filename}:{line}
+    |    ...
+
+    3) Error type 3:
     |** ({error_name}) {filename}:{line}: {message}
     |...<trace lines>...
 
@@ -65,22 +74,33 @@ class Elixirc(Linter):
     |** (CompileError) web/router.ex:19: undefined function get/2
     |    ...
 
-    2) #todo
+    2.1) #todo
 
-    3) insert a "resources :users, UserController" line in router.ex
+    2.2) Insert a "resources :users, UserController" line in router.ex
     |== Compilation error on file web/router.ex ==
     |** (FunctionClauseError) no function clause matching in Phoenix.Router.Resource.build/3
     |    (phoenix) lib/phoenix/router/resource.ex:30: Phoenix.Router.Resource.build(:users, UserController, [])
     |    web/router.ex:20: (module)
     |    ...
 
-    4) Modify line 2 to "use MyApp.Web, :dasdsadasda"
+    2.3) Modify line 2 to "use MyApp.Web, :dasdsadasda" in router.ex
     |== Compilation error on file web/controllers/page_controller.ex ==
     |** (UndefinedFunctionError) undefined function: MyApp.Web.controllers/0
     |    MyApp.Web.controllers()
     |    expanding macro: MyApp.Web.__using__/1
     |    web/controllers/page_controller.ex:2: MyApp.PageController (module)
     |    ...
+
+    2.4) Define an virtual attribute with the same name as an existing association
+    |== Compilation error on file web/models/user.ex ==
+    |** (ArgumentError) field/association :roles is already set on schema
+    |    lib/ecto/schema.ex:1196: Ecto.Schema.put_struct_field/3
+    |    lib/ecto/schema.ex:1176: Ecto.Schema.association/5
+    |    web/models/user.ex:20: (module)
+    |    (stdlib) erl_eval.erl:669: :erl_eval.do_apply/6
+    |    (elixir) lib/kernel/parallel_compiler.ex:97: anonymous fn/4 in Kernel.ParallelCompiler.spawn_compilers/8 
+
+    3) #todo
 
     """
 
@@ -95,19 +115,11 @@ class Elixirc(Linter):
         # Error type 2
         r"== Compilation error on file (?P<e_file2>.+) ==\n"
         r"\*\* \(.+\) (?P<e_msg2>.+)\n"
+        r"(.+\n)*?"
         r"    (?P=e_file2):(?P<e_line2>\d+)",
 
         # Error type 3
-        # Do not backreference e_file3 -- we want the _first_
-        # meaningful trace line to be captured, skipping an
-        # arbitary number of irrelevant lines before that.
-        r"== Compilation error on file .+ ==\n"
-        r"\*\* \(.+\) (?P<e_msg3>.+)\n"
-        r"(.+\n)*?"
-        r"    (?P<e_file3>[^(].+):(?P<e_line3>\d+)",
-
-        # Error type 4
-        r"\*\* \(.+\) (?P<e_file4>.+):(?P<e_line4>\d+): (?P<e_msg4>.+)",
+        r"\*\* \(.+\) (?P<e_file3>.+):(?P<e_line3>\d+): (?P<e_msg3>.+)",
 
         # Warning type 1
         r"(?P<w_file1>.+):(?P<w_line1>\d+): warning: (?P<w_msg1>.+)"
@@ -262,15 +274,6 @@ class Elixirc(Linter):
                 'error',
                 captures['e_msg3']
             )
-
-        elif captures['e_file4'] is not None:
-            persist.debug('Error type 4')
-            dummy_str = "%s:%s:%s:%s" % (
-                captures['e_file4'],
-                captures['e_line4'],
-                'error',
-                captures['e_msg4']
-            )
         elif captures['w_file1'] is not None:
             persist.debug('Warning type 1')
             dummy_str = "%s:%s:%s:%s" % (
@@ -285,4 +288,3 @@ class Elixirc(Linter):
 
         persist.debug("Dummy string: %s" % dummy_str)
         return dummy_str
-
