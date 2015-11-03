@@ -9,7 +9,7 @@ This linter plugin for [SublimeLinter][docs] provides an interface to check [eli
 SublimeLinter 3 must be installed in order to use this plugin. If SublimeLinter 3 is not installed, please follow the instructions [here][installation].
 
 ### Linter installation
-Before installing this plugin, you must ensure that `elixir` (>= 1.0) is installed on your system. For instructions on how to install elixir, please refer to the [http://elixir-lang.org/install.html](elixir-lang docs).
+Before installing this plugin, you must ensure that `elixir` (>= 1.0) is installed on your system. For instructions on how to install elixir, please refer to the [elixir-lang docs](http://elixir-lang.org/install.html).
 
 ### Linter configuration
 In order for `elixir` to be executed by SublimeLinter, you must ensure that its path is available to SublimeLinter. Before going any further, please read and follow the steps in [“Finding a linter executable”](http://sublimelinter.readthedocs.org/en/latest/troubleshooting.html#finding-a-linter-executable) through “Validating your PATH” in the documentation.
