@@ -1,0 +1,23 @@
+Command customization
+---------------------
+
+Now you can modify the executed command with the `prepend` and `append` options.
+Both options expect a list of strings.
+
+A typical use-case for this would be if you use elixir version managers (e.g. kiex),
+which alter certain environment variables when switching between different versions of elixir.
+
+Since sublime is *very* limited in terms of user-configurable environment variables,
+the problem could be solved with the `env` command on any typical UNIX-based OS.
+
+#### Example
+
+   "SublimeLinter": {
+      "linters": {
+        "elixirc": {
+          "chdir": "/Users/foo/projects/myapp",
+          "mix_project": true,
+          "prepend": ["/usr/bin/env", "MIX_ARCHIVES=/Users/foo/.kiex/mix/archives/elixir-1.3.3"]
+        }
+      }
+    }
