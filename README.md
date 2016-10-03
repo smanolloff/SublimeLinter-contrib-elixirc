@@ -30,11 +30,14 @@ For general information on how SublimeLinter works with settings, please see [Se
 
 In addition to the standard SublimeLinter settings, SublimeLinter-contrib-elixirc provides its own settings.
 
-|Setting     |Description                    |
-|:-----------|:------------------------------|
-|pa          |_(list)_ dirs for `-pa` option |
-|require     |_(list)_ dirs/files to require |
-|mix_project |_(bool)_ use mix for linting   |
+| Setting     | Description                                      |
+|:------------|:-------------------------------------------------|
+| pa          | _(list)_ dirs for `-pa` option                   |
+| require     | _(list)_ dirs/files to require                   |
+| mix_project | _(bool)_ use mix for linting                     |
+| chdir       | _(string)_ run linter from the specified dir     |
+| prepend     | _(list)_ will be prepended to the linter command |
+| append      | _(list)_ will be appended to the linter command  |
 
 ### In a mix project:
 * set `chdir` to your mix project's root directory.
@@ -58,6 +61,9 @@ Where:
 
 Note: Currently, `exs` files within a mix project (e.g. ExUnit tests) are not linted. This is a known issue and will be resolved in a future version.
 
+If you also use an elixir version manager, set `prepend` as [per the example below](#example-2)
+
+
 ### Outside a mix project:
 * if a file uses macros, the beam output paths must be added to code path through `pa`
 * files (or directories) to require prior to linting must be added through `require`. They are required in the given order. Directories, if given, are traversed recursively and alphabetically.
@@ -80,6 +86,26 @@ Where:
 * `PROJECT_WITH_MACROS` is the project name which contains the macros. List all projects in `pa`
 * `DEP1` is a directory with files to require. If needed, list specific files first.
 
+### Command customization
+The `prepend` and `append` options allow you to modify the executed command.
+
+A typical use-case for this would be if you use elixir version managers (e.g. [kiex](https://github.com/taylor/kiex)), which alter certain environment variables when switching between different versions of elixir.
+
+Since sublime is *very* limited in terms of user-configurable environment variables, the problem could be solved with the `env` command on any typical UNIX-based OS.
+
+#### Example
+
+```JSON
+   "SublimeLinter": {
+      "linters": {
+        "elixirc": {
+          "chdir": "/Users/foo/projects/myapp",
+          "mix_project": true,
+          "prepend": ["/usr/bin/env", "MIX_ARCHIVES=/Users/foo/.kiex/mix/archives/elixir-1.3.3"]
+        }
+      }
+    }
+```
 
 ## Contributing
 If you would like to contribute enhancements or fixes, please do the following:

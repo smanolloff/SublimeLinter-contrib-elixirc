@@ -97,7 +97,7 @@ class Elixirc(Linter):
     |    lib/ecto/schema.ex:1176: Ecto.Schema.association/5
     |    web/models/user.ex:20: (module)
     |    (stdlib) erl_eval.erl:669: :erl_eval.do_apply/6
-    |    (elixir) lib/kernel/parallel_compiler.ex:97: anonymous fn/4 in Kernel.ParallelCompiler.spawn_compilers/8 
+    |    (elixir) lib/kernel/parallel_compiler.ex:97: anonymous fn/4 in Kernel.ParallelCompiler.spawn_compilers/8
 
     3) #todo
 
@@ -149,7 +149,10 @@ class Elixirc(Linter):
         require = settings.get('require', [])
         paths = settings.get('pa', [])
         mix = settings.get('mix_project', None)
-        command = [self.executable_path]
+        prepend = settings.get('prepend', [])
+        append = settings.get('append', [])
+
+        command = prepend + [self.executable_path] + append
 
         if mix:
             command.extend(self.mix_args())
