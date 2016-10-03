@@ -57,6 +57,9 @@ class Elixirc(Linter):
     1) Warning type 1:
     |{filename}:{line}: warning: {message}
 
+    2) Warning type 2:
+    |warning: {message}
+    |  {filename}:{line}
 
     In order to cover all cases we need a complex regex.
     Since a single regex does *not* allow to have several
@@ -121,7 +124,11 @@ class Elixirc(Linter):
         r"\*\* \(.+\) (?P<e_file3>.+):(?P<e_line3>\d+): (?P<e_msg3>.+)",
 
         # Warning type 1
-        r"(?P<w_file1>.+):(?P<w_line1>\d+): warning: (?P<w_msg1>.+)"
+        r"(?P<w_file1>.+):(?P<w_line1>\d+): warning: (?P<w_msg1>.+)",
+
+        # Warning type 2
+        r"warning: (?P<w_msg2>.+)\n"
+        r"  (?P<w_file2>.+):(?P<w_line2>\d+)"
     )
 
     regex = "|".join([r"^(?:%s)" % x for x in regex_parts])
@@ -283,6 +290,14 @@ class Elixirc(Linter):
                 captures['w_line1'],
                 'warning',
                 captures['w_msg1']
+            )
+        elif captures['w_file2'] is not None:
+            persist.debug('Warning type 2')
+            dummy_str = "%s:%s:%s:%s" % (
+                captures['w_file2'],
+                captures['w_line2'],
+                'warning',
+                captures['w_msg2']
             )
         else:
             persist.debug('No match')
