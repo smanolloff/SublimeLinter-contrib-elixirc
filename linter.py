@@ -112,16 +112,16 @@ class Elixirc(Linter):
     regex_parts = (
         # Error type 1
         r"== Compilation error on file (?P<e_file1>.+) ==\n"
-        r"\*\* \(.+\) (?P=e_file1):(?P<e_line1>\d+): (?P<e_msg1>.+)",
+        r"\*\* \(.+?\) (?P=e_file1):(?P<e_line1>\d+): (?P<e_msg1>.+)",
 
         # Error type 2
         r"== Compilation error on file (?P<e_file2>.+) ==\n"
-        r"\*\* \(.+\) (?P<e_msg2>.+)\n"
+        r"\*\* \(.+?\) (?P<e_msg2>.+)\n"
         r"(.+\n)*?"
         r"    (?P=e_file2):(?P<e_line2>\d+)",
 
         # Error type 3
-        r"\*\* \(.+\) (?P<e_file3>.+):(?P<e_line3>\d+): (?P<e_msg3>.+)",
+        r"\*\* \(.+?\) (?P<e_file3>.+):(?P<e_line3>\d+): (?P<e_msg3>.+)",
 
         # Warning type 1
         r"(?P<w_file1>.+):(?P<w_line1>\d+): warning: (?P<w_msg1>.+)",
