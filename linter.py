@@ -147,6 +147,17 @@ class Elixirc(Linter):
         "mix": False
     }
 
+    #
+    # Make elixir 'lint' itself by at least checking the syntax
+    # (see https://groups.google.com/forum/#!msg/elixir-lang-talk/B29noPHvQ-8/9JvSGPop7n0J)
+    #
+    exs_script = '''
+case Code.string_to_quoted(System.argv |> Enum.fetch!(0) |> File.read!) do
+  {:ok, _} -> :ok
+  {:error, {l, msg1, msg2}} -> IO.puts("** (...) %s:#{l}: #{msg1}#{msg2}")
+end
+'''
+
     multiline = True
     executable = "elixir"
 
@@ -161,12 +172,21 @@ class Elixirc(Linter):
 
         command = prepend + [self.executable_path] + append
 
-        if mix:
+        if self.filename.endswith('.exs'):
+            command.extend(self.exs_args())
+        elif mix:
             command.extend(self.mix_args())
         else:
             command.extend(self.regular_args(paths, require))
 
         return command
+
+    def exs_args(self):
+        return [
+            '-e',
+            self.exs_script % (self.filename),
+            self.filename
+        ]
 
     def regular_args(self, paths, require):
         """

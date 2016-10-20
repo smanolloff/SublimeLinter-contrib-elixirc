@@ -59,7 +59,7 @@ In your _.sublime-project_ file:
 Where:
 * `PROJECT_ROOT` is the path to the root your project (use `${project}` if your sublime project is saved there)
 
-Note: Currently, `exs` files within a mix project (e.g. ExUnit tests) are not linted. This is a known issue and will be resolved in a future version.
+Note: Currently, `exs` files within a mix project (e.g. ExUnit tests) are linted for syntax errors only. This is a known issue and will be resolved in a future version.
 
 If you also use an elixir version manager, set `prepend` as [per the example below](#example-2)
 

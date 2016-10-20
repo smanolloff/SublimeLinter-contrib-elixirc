@@ -1,0 +1,7 @@
+EXS file support
+----------------
+
+As of this version, .exs files within a mix project will also be linted, but in a very limited manner
+(see https://groups.google.com/forum/#!msg/elixir-lang-talk/B29noPHvQ-8/9JvSGPop7n0J)
+
+Basically, it will at least detect syntactic, but not semantic errors.
