@@ -182,6 +182,7 @@ end
         return command
 
     def exs_args(self):
+        """Build the argument list when linting an EXS file."""
         return [
             '-e',
             self.exs_script % (self.filename),
