@@ -1,3 +1,5 @@
+# NOTE: This repository is no longer maintained, as I've switched to a far-superior way of linting by using [JakeBecker's elixir-ls](https://github.com/JakeBecker/elixir-ls) and [tom564's LSP](https://github.com/tomv564/LSP). Be sure to check it out yourself.
+
 SublimeLinter-contrib-elixirc
 ==========================
 
